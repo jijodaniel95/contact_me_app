@@ -84,6 +84,7 @@ public class ContactFormController {
             logger.info("Message: {}", request.getMessageText());
             logger.info("Submission ID: {}", contactFormSubmission.getId());
             NotificationMessage notificationMessage = new NotificationMessage();
+            notificationMessage.setFullName(request.getFullName());
             notificationMessage.setMessage(request.getMessageText());
             notificationMessage.setSender(request.getEmail());
             notificationMessage.setSubject(request.getSubject());
