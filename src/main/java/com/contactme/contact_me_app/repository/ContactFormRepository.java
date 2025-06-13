@@ -4,7 +4,6 @@ import com.contactme.contact_me_app.entity.ContactFormSubmission;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.OffsetDateTime;
 
 @Repository
 public interface ContactFormRepository extends JpaRepository<ContactFormSubmission, Long> {
