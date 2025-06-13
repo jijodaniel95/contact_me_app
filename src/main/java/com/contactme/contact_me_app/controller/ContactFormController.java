@@ -1,11 +1,13 @@
 package com.contactme.contact_me_app.controller;
 
 import com.contactme.contact_me_app.dto.ContactFormRequest;
+import com.contactme.contact_me_app.dto.NotificationMessage;
 import com.contactme.contact_me_app.entity.ContactFormSubmission;
-import com.contactme.contact_me_app.kafka.KafkaProducer;
+import com.contactme.contact_me_app.publisher.PublishMessage;
 import com.contactme.contact_me_app.service.ContactFormService;
 import com.contactme.contact_me_app.service.RateLimitService;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -31,17 +33,18 @@ public class ContactFormController {
 
     private final RateLimitService rateLimitService;
     private final ContactFormService contactFormService;
-    private  final KafkaProducer kafkaProducer;
+    private final PublishMessage publishMessage;
 
     /**
      * Constructor for ContactFormController.
      * @param rateLimitService Service to handle rate limiting logic.
      * @param contactFormService Service to handle contact form submission persistence.
      */
-    public ContactFormController(RateLimitService rateLimitService, ContactFormService contactFormService,KafkaProducer kafkaProducer) {
+    public ContactFormController(RateLimitService rateLimitService, ContactFormService contactFormService,
+                                 @Qualifier("pubSubPublisher") PublishMessage publishMessage) {
         this.rateLimitService = rateLimitService;
         this.contactFormService = contactFormService;
-        this.kafkaProducer = kafkaProducer;
+        this.publishMessage = publishMessage;
         logger.info("ContactFormController initialized with RateLimitService and ContactFormService.");
     }
 
@@ -80,7 +83,11 @@ public class ContactFormController {
             logger.info("Subject: {}", request.getSubject());
             logger.info("Message: {}", request.getMessageText());
             logger.info("Submission ID: {}", contactFormSubmission.getId());
-            this.kafkaProducer.sendMessage(contactFormSubmission.getId());
+            NotificationMessage notificationMessage = new NotificationMessage();
+            notificationMessage.setMessage(request.getMessageText());
+            notificationMessage.setSender(request.getEmail());
+            notificationMessage.setSubject(request.getSubject());
+            this.publishMessage.sendMessage(notificationMessage);
             // Return a success response
             return new ResponseEntity<>("Contact form submitted successfully!", HttpStatus.OK);
         } catch (Exception e) {
