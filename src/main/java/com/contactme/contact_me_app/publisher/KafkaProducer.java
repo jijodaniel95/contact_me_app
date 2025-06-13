@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
  * It uses Spring's KafkaTemplate to interact with the Kafka broker.
  */
 @Service
-public class KafkaProducer {
+public class KafkaProducer implements PublishMessage {
 
     // Initialize a logger for this class
     private static final Logger logger = LoggerFactory.getLogger(KafkaProducer.class);
@@ -28,14 +28,15 @@ public class KafkaProducer {
         this.kafkaTemplate = kafkaTemplate;
         logger.info("KafkaProducer initialized with topic: {}", topic);
     }
-
     /**
      * Asynchronously sends a message (Long ID) to the configured Kafka topic.
      * Logs the attempt, success, or failure of sending the message.
      * @param message The Long value (e.g., a submission ID) to send.
      */
     @Async
+    @Override
     public void sendMessage(Long message) {
+
         logger.debug("Attempting to send message to topic '{}': {}", topic, message);
         try {
             kafkaTemplate.send(topic, message);
@@ -45,4 +46,7 @@ public class KafkaProducer {
             logger.error("Failed to send message '{}' to Kafka topic '{}': {}", message, topic, e.getMessage(), e);
         }
     }
+
+
+
 }
