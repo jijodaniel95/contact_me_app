@@ -85,9 +85,9 @@ public class ContactFormController {
             logger.info("Submission ID: {}", contactFormSubmission.getId());
             NotificationMessage notificationMessage = new NotificationMessage(
                 request.getFullName(),
-                request.getMessageText(),
                 request.getEmail(),
-                request.getSubject()
+                request.getSubject(),
+                request.getMessageText()
             );
             this.publishMessage.sendMessage(notificationMessage);
             // Return a success response
