@@ -83,11 +83,12 @@ public class ContactFormController {
             logger.info("Subject: {}", request.getSubject());
             logger.info("Message: {}", request.getMessageText());
             logger.info("Submission ID: {}", contactFormSubmission.getId());
-            NotificationMessage notificationMessage = new NotificationMessage();
-            notificationMessage.setFullName(request.getFullName());
-            notificationMessage.setMessage(request.getMessageText());
-            notificationMessage.setSender(request.getEmail());
-            notificationMessage.setSubject(request.getSubject());
+            NotificationMessage notificationMessage = new NotificationMessage(
+                request.getFullName(),
+                request.getMessageText(),
+                request.getEmail(),
+                request.getSubject()
+            );
             this.publishMessage.sendMessage(notificationMessage);
             // Return a success response
             return new ResponseEntity<>("Contact form submitted successfully!", HttpStatus.OK);

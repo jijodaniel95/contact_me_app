@@ -6,6 +6,13 @@ public class NotificationMessage {
     private String subject;
     private String message;
 
+    public NotificationMessage(String fullName, String sender, String subject, String message) {
+        this.fullName = fullName;
+        this.sender = sender;
+        this.subject = subject;
+        this.message = message;
+    }
+
     public String getSender() {
         return sender;
     }
